@@ -40,13 +40,14 @@ public class Campo {
     }
     boolean abrir(){
         if(!aberto && !bandeira){
+            aberto = true;
             if(minado){
                 throw new ExplosaoException();
             }
             if(vizinhancaSegura()){
                 vizinhos.forEach(n -> n.abrir());
             }
-            return true;
+
         }
         return false;
     }
@@ -86,10 +87,10 @@ public class Campo {
     }
     public String toString(){
         if(bandeira){
-            return "🚩";
+            return "X";
         }
         else if(minado && aberto){
-            return "🧨";
+            return "*";
         }
         else if(aberto && minasNaVizinhanca() > 0){
             return minasNaVizinhanca() + "";
@@ -104,5 +105,9 @@ public class Campo {
 
     public boolean isMinado() {
         return minado;
+    }
+
+    public void setAberto(boolean aberto) {
+        this.aberto = aberto;
     }
 }

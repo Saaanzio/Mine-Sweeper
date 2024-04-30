@@ -1,5 +1,7 @@
 package minesweeper.modelo;
 
+import minesweeper.excecao.ExplosaoException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,24 @@ public class Tabuleiro {
         criarVizinhos();
         criarMinas();
     }
+    public void abrir(int linha, int coluna){
+        try{
+            campos.stream()
+                    .filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
+                    .findFirst()
+                    .ifPresent(c -> c.abrir());
+        }catch(ExplosaoException e){
+            campos.forEach(c -> c.setAberto(true));
+            throw e;
+        }
 
+    }
+    public void colocarBandeira(int linha, int coluna){
+        campos.stream()
+                .filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
+                .findFirst()
+                .ifPresent(c -> c.alternarBandeira());
+    }
     private void criarMinas() {
         long minasAtuais = 0;
 
@@ -51,6 +70,19 @@ public class Tabuleiro {
         campos.stream().forEach(Campo::reniciar);
     }
     public String toString(){
-        return "";
+        StringBuilder sb = new StringBuilder();
+
+        int k = 0;
+        for(int i = 0; i < qntLinhas; i++){
+            for(int j = 0; j < qntColunas; j++){
+                sb.append(" ");
+                sb.append(campos.get(k));
+                sb.append(" ");
+                k++;
+
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }
