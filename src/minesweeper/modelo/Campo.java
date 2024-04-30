@@ -47,7 +47,7 @@ public class Campo {
             if(vizinhancaSegura()){
                 vizinhos.forEach(n -> n.abrir());
             }
-
+            return true;
         }
         return false;
     }
