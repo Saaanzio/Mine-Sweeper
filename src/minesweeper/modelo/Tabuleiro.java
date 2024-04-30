@@ -25,7 +25,7 @@ public class Tabuleiro {
             campos.stream()
                     .filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
                     .findFirst()
-                    .ifPresent(c -> c.abrir());
+                    .ifPresent(Campo::abrir);
         }catch(ExplosaoException e){
             campos.forEach(c -> c.setAberto(true));
             throw e;
@@ -36,15 +36,15 @@ public class Tabuleiro {
         campos.stream()
                 .filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
                 .findFirst()
-                .ifPresent(c -> c.alternarBandeira());
+                .ifPresent(Campo::alternarBandeira);
     }
     private void criarMinas() {
         long minasAtuais = 0;
 
         do{
-            minasAtuais = campos.stream().filter(Campo::isMinado).count();
             int aleatorio = (int) (Math.random() * campos.size());
             campos.get(aleatorio).AdicionarMina();
+            minasAtuais = campos.stream().filter(Campo::isMinado).count();
         }while(minasAtuais < minas);
     }
 
@@ -71,9 +71,18 @@ public class Tabuleiro {
     }
     public String toString(){
         StringBuilder sb = new StringBuilder();
-
+            sb.append(" ");
+            sb.append(" ");
+        for(int j = 0; j < qntColunas; j++){
+            sb.append(" ");
+            sb.append(j);
+            sb.append(" ");
+        }
+        sb.append("\n");
         int k = 0;
         for(int i = 0; i < qntLinhas; i++){
+            sb.append(i);
+            sb.append(" ");
             for(int j = 0; j < qntColunas; j++){
                 sb.append(" ");
                 sb.append(campos.get(k));
