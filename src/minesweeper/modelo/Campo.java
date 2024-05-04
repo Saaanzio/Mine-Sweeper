@@ -1,7 +1,4 @@
 package minesweeper.modelo;
-
-import minesweeper.excecao.ExplosaoException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +9,16 @@ public class Campo {
     private boolean minado = false;
     private boolean bandeira = false;
     private List<Campo> vizinhos = new ArrayList<>();
-
+    private List<CampoObservador> observadores = new ArrayList<>();
     public Campo(int linha, int coluna){
         this.linha = linha;
         this.coluna = coluna;
+    }
+    public void registrarObservador(CampoObservador observador){
+        observadores.add(observador);
+    }
+    private void notificarObservador(CampoEvento evento){
+        observadores.stream().forEach(o -> o.eventoOcorreu(this,evento));
     }
     public boolean adicionarVizinho(Campo vizinho){
         boolean linhaDiferente = linha != vizinho.linha;
@@ -37,13 +40,21 @@ public class Campo {
     public void alternarBandeira(){
         if(!aberto)
             bandeira = !bandeira;
+        if(bandeira){
+            notificarObservador(CampoEvento.MARCAR);
+        }else{
+            notificarObservador(CampoEvento.DESMARCAR);
+        }
     }
     boolean abrir(){
         if(!aberto && !bandeira){
-            aberto = true;
+
             if(minado){
-                throw new ExplosaoException();
+                notificarObservador(CampoEvento.EXPLODIR);
+                return true;
             }
+            setAberto(true);
+
             if(vizinhancaSegura()){
                 vizinhos.forEach(n -> n.abrir());
             }
@@ -85,23 +96,6 @@ public class Campo {
         minado = false;
         bandeira = false;
     }
-    public String toString(){
-        if(bandeira){
-            return "X";
-        }
-        else if(minado && aberto){
-            return "*";
-        }
-        else if(aberto && minasNaVizinhanca() > 0){
-            return minasNaVizinhanca() + "";
-        }
-        else if(aberto){
-            return " ";
-        }
-        else{
-            return "?";
-        }
-    }
 
     public boolean isMinado() {
         return minado;
@@ -109,5 +103,8 @@ public class Campo {
 
     public void setAberto(boolean aberto) {
         this.aberto = aberto;
+        if(aberto){
+            notificarObservador(CampoEvento.ABRIR);
+        }
     }
 }

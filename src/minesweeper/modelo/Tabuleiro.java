@@ -1,16 +1,15 @@
 package minesweeper.modelo;
 
-import minesweeper.excecao.ExplosaoException;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
-public class Tabuleiro {
-    private int qntLinhas;
-    private int qntColunas;
-    private int minas;
+public class Tabuleiro implements CampoObservador{
+    private final int qntLinhas;
+    private final int qntColunas;
+    private final int minas;
     private final List<Campo> campos = new ArrayList<>();
-
+    private final List<Consumer<Boolean>> observadores = new ArrayList<>();
     public Tabuleiro(int qntLinhas, int qntColunas, int minas) {
         this.qntLinhas = qntLinhas;
         this.qntColunas = qntColunas;
@@ -20,16 +19,34 @@ public class Tabuleiro {
         criarVizinhos();
         criarMinas();
     }
+    public void paraCada(Consumer<Campo> funcao){
+        campos.forEach(funcao);
+    }
+    public void registrarObservador(Consumer<Boolean> observador) {
+        observadores.add(observador);
+    }
+    private void notificarObservador(Boolean resultado){
+        observadores.stream().forEach(o -> o.accept(resultado));
+    }
+
+    public int getQntColunas() {
+        return qntColunas;
+    }
+
+    public int getQntLinhas() {
+        return qntLinhas;
+    }
+
     public void abrir(int linha, int coluna){
-        try{
             campos.stream()
                     .filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
                     .findFirst()
                     .ifPresent(Campo::abrir);
-        }catch(ExplosaoException e){
-            campos.forEach(c -> c.setAberto(true));
-            throw e;
-        }
+
+    }
+    private void mostrarMinas(){
+        campos.stream().filter(c -> c.isMinado())
+                .forEach(c -> c.setAberto(true));
 
     }
     public void colocarBandeira(int linha, int coluna){
@@ -59,7 +76,9 @@ public class Tabuleiro {
     private void criarCampos() {
         for(int i = 0; i<qntLinhas; i++) {
             for(int j = 0; j<qntColunas; j++) {
-                campos.add(new Campo(i, j));
+                Campo campo = new Campo(i,j);
+                campo.registrarObservador(this);
+                campos.add(campo);
             }
         }
     }
@@ -69,29 +88,16 @@ public class Tabuleiro {
     public void reniciar(){
         campos.stream().forEach(Campo::reniciar);
     }
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
-            sb.append(" ");
-            sb.append(" ");
-        for(int j = 0; j < qntColunas; j++){
-            sb.append(" ");
-            sb.append(j);
-            sb.append(" ");
-        }
-        sb.append("\n");
-        int k = 0;
-        for(int i = 0; i < qntLinhas; i++){
-            sb.append(i);
-            sb.append(" ");
-            for(int j = 0; j < qntColunas; j++){
-                sb.append(" ");
-                sb.append(campos.get(k));
-                sb.append(" ");
-                k++;
 
-            }
-            sb.append("\n");
+    @Override
+    public void eventoOcorreu(Campo campo, CampoEvento evento) {
+        if(evento == CampoEvento.EXPLODIR){
+            System.out.println("BOOM");
+            notificarObservador(false);
         }
-        return sb.toString();
+        else if(Vitoria()){
+            System.out.println("Ganhou");
+            notificarObservador(true);
+        }
     }
 }
