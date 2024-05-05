@@ -45,7 +45,9 @@ public class Tabuleiro implements CampoObservador{
 
     }
     private void mostrarMinas(){
-        campos.stream().filter(c -> c.isMinado())
+        campos.stream()
+                .filter(c -> c.isMinado())
+                .filter(c -> !c.hasBandeira())
                 .forEach(c -> c.setAberto(true));
 
     }
@@ -92,12 +94,13 @@ public class Tabuleiro implements CampoObservador{
     @Override
     public void eventoOcorreu(Campo campo, CampoEvento evento) {
         if(evento == CampoEvento.EXPLODIR){
-            System.out.println("BOOM");
+            mostrarMinas();
             notificarObservador(false);
         }
         else if(Vitoria()){
-            System.out.println("Ganhou");
             notificarObservador(true);
         }
+
     }
+
 }

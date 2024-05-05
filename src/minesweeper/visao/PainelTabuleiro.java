@@ -9,10 +9,17 @@ public class PainelTabuleiro extends JPanel {
     public PainelTabuleiro(Tabuleiro tabuleiro){
         setLayout(new GridLayout(tabuleiro.getQntLinhas(), tabuleiro.getQntColunas()));
 
-        int total = tabuleiro.getQntLinhas() * tabuleiro.getQntColunas();
         tabuleiro.paraCada(c -> add(new BotaoCampo(c)));
-        tabuleiro.registrarObservador(e ->{
-            // TODO
+        tabuleiro.registrarObservador(e -> {
+
+            SwingUtilities.invokeLater(()->{
+                if(e.Vitoria()){
+                    JOptionPane.showMessageDialog(this, "Vitoria");
+                }else{
+                    JOptionPane.showMessageDialog(this, "Derrota");
+                }
+                tabuleiro.reniciar();
+            });
         });
 
     }
