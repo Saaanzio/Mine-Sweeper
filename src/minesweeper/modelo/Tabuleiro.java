@@ -9,7 +9,7 @@ public class Tabuleiro implements CampoObservador{
     private final int qntColunas;
     private final int minas;
     private final List<Campo> campos = new ArrayList<>();
-    private final List<Consumer<Boolean>> observadores = new ArrayList<>();
+    private final List<Consumer<ResultadoEvento>> observadores = new ArrayList<>();
     public Tabuleiro(int qntLinhas, int qntColunas, int minas) {
         this.qntLinhas = qntLinhas;
         this.qntColunas = qntColunas;
@@ -22,11 +22,11 @@ public class Tabuleiro implements CampoObservador{
     public void paraCada(Consumer<Campo> funcao){
         campos.forEach(funcao);
     }
-    public void registrarObservador(Consumer<Boolean> observador) {
+    public void registrarObservador(Consumer<ResultadoEvento> observador) {
         observadores.add(observador);
     }
     private void notificarObservador(Boolean resultado){
-        observadores.stream().forEach(o -> o.accept(resultado));
+        observadores.stream().forEach(o -> o.accept(new ResultadoEvento(resultado)));
     }
 
     public int getQntColunas() {
@@ -89,6 +89,7 @@ public class Tabuleiro implements CampoObservador{
     }
     public void reniciar(){
         campos.stream().forEach(Campo::reniciar);
+        criarMinas();
     }
 
     @Override

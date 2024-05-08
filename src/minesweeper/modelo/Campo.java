@@ -95,7 +95,7 @@ public class Campo {
         aberto = false;
         minado = false;
         bandeira = false;
-        notificarObservador(CampoEvento.RENICIAR    );
+        notificarObservador(CampoEvento.RENICIAR);
     }
 
     public boolean isMinado() {

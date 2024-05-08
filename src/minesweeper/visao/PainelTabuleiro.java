@@ -13,7 +13,7 @@ public class PainelTabuleiro extends JPanel {
         tabuleiro.registrarObservador(e -> {
 
             SwingUtilities.invokeLater(()->{
-                if(e.Vitoria()){
+                if(e.isGanhou()){
                     JOptionPane.showMessageDialog(this, "Vitoria");
                 }else{
                     JOptionPane.showMessageDialog(this, "Derrota");
