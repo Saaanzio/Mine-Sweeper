@@ -1,4 +1,4 @@
-# Projeto Campo Minado realizado em Java, utiliza Swing:
+# Projeto Campo Minado realizado em Java, utiliza Swing, Padrão MVC e Observer:
 ![image](https://github.com/Saaanzio/Mine-Sweeper/assets/128072794/53f51494-d99c-43b9-8534-1d6667d39b66)
 
 ### Versão Antiga, Branch SemSwingComJUnit:
